@@ -22,7 +22,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\models\Guardavidas',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
