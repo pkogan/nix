@@ -39,6 +39,8 @@ class Asistencia extends \yii\db\ActiveRecord {
     const ROL_GUARDAVIDAS = 1;
     const ROL_JEFE = 2;
     const ROL_INGRESANTE = 3;
+    const ROL_ADMIN=4;
+            
     const COMPLEJIDAD_MEDIA = 2;
 
     public $latitude;
@@ -49,7 +51,12 @@ class Asistencia extends \yii\db\ActiveRecord {
         $query = parent::find()->addSelect('*')->addSelect(new Expression("Y([[{$fieldName}]]) as latitude"))
                         ->addSelect(new Expression("X([[{$fieldName}]]) as longitude"))->joinWith('idGuardavidas0');
         //TODO cambiar a roles BBDD si el usr es admin muestra todos
-        if (Yii::$app->user->identity->username != 'admin') {
+        //si es guardavidas o ingresante debe ver solo sus rescates
+        //si es jefe debe ver solo Guardavidas
+        //si es admin ve todo
+        if (Yii::$app->user->identity->idRol == Asistencia::ROL_GUARDAVIDAS || Yii::$app->user->identity->idRol == Asistencia::ROL_GUARDAVIDAS) {
+            $query->andWhere('Guardavidas.idGuardavidas=' . Yii::$app->user->identity->id);
+        }elseif(Yii::$app->user->identity->idRol == Asistencia::ROL_JEFE ){
             $query->andWhere('Guardavidas.idRol=' . Asistencia::ROL_GUARDAVIDAS);
         }
         return $query;
