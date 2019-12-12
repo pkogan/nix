@@ -47,6 +47,16 @@ class BD extends PDO {
         }
     }
 
+    public function buscarUsuario($request){
+        $idGuardavidas=$this->buscarGuardavidas($request);
+        $sql = "select * from Guardavidas where idGuardavidas=\"$idGuardavidas\"";
+        $guardavidas = $this->consulta($sql);
+        if (count($guardavidas) != 1) {
+            return null;
+        }else{
+            return $guardavidas[0];
+        }
+    }
     /* Busca Guardavidas y si no lo encuentra lo agrega. retorna idGuardavidas */
 
     public function buscarGuardavidas($request) {

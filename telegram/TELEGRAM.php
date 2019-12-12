@@ -27,6 +27,7 @@ class TELEGRAM {
     public function __construct() {
         include 'config.php';
         $this->TOKEN = $config['TOKEN'];
+        $this->file_log= $config['file_log'];
     }
 
     public function setBD($bd) {
@@ -179,7 +180,7 @@ class TELEGRAM {
             } else {
                 $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /primerosauxilios o /rescate?');
             }
-        } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
+        } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/web','/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
             if ($request->message->text == '/start') {
                 $this->sendMessage($request->message->chat->id, 'Hola ' . $request->message->from->first_name);
@@ -241,6 +242,9 @@ class TELEGRAM {
                 } else {
                     $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /novedad, /primerosauxilios o /rescate?');
                 }
+            } elseif ($request->message->text == '/web') {
+                $usuario=$this->bd->buscarUsuario($request->message->from);
+                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.uncoma.edu.ar/index.php con Usuario:'.$usuario['Nombre'].', Clave:'.$usuario['idTelegram']);
             }
         } else {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
