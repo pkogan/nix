@@ -244,7 +244,7 @@ class TELEGRAM {
                 }
             } elseif ($request->message->text == '/web') {
                 $usuario=$this->bd->buscarUsuario($request->message->from);
-                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.uncoma.edu.ar/index.php con Usuario:'.$usuario['Nombre'].', Clave:'.$usuario['idTelegram']);
+                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.fi.uncoma.edu.ar/index.php?r=site/login con Usuario:'.$usuario['Nombre'].', Clave:'.$usuario['idTelegram']);
             }
         } else {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
