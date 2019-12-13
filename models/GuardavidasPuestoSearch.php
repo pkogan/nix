@@ -4,22 +4,23 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Guardavidas;
+use app\models\GuardavidasPuesto;
 
 /**
- * GuardavidasSearch represents the model behind the search form of `app\models\Guardavidas`.
+ * GuardavidasPuestoSearch represents the model behind the search form of `app\models\GuardavidasPuesto`.
  */
-class GuardavidasSearch extends Guardavidas
+class GuardavidasPuestoSearch extends GuardavidasPuesto
 {
-    public $rol;
+    public $guardavidas;
+    public $balneario;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['idGuardavidas', 'idRol'], 'integer'],
-            [['Nombre', 'rol','idTelegram', 'Mail'], 'safe'],
+            [['idGuardavidasPuesto', 'idGuardavidas', 'idPuesto'], 'integer'],
+            [['Fecha','guardavidas','balneario'], 'safe'],
         ];
     }
 
@@ -41,7 +42,7 @@ class GuardavidasSearch extends Guardavidas
      */
     public function search($params)
     {
-        $query = Guardavidas::find()->innerJoinWith('idRol0');
+        $query = GuardavidasPuesto::find()->innerJoinWith('idGuardavidas0')->innerJoinWith('idPuesto0')->innerJoinWith('idPuesto0.idBalneario0');
 
         // add conditions that should always apply here
 
@@ -59,14 +60,13 @@ class GuardavidasSearch extends Guardavidas
 
         // grid filtering conditions
         $query->andFilterWhere([
+            'idGuardavidasPuesto' => $this->idGuardavidasPuesto,
             'idGuardavidas' => $this->idGuardavidas,
-            'idRol' => $this->idRol,
+            'idPuesto' => $this->idPuesto,
+            'Fecha' => $this->Fecha,
         ]);
-
-        $query->andFilterWhere(['like', 'Nombre', $this->Nombre])
-            ->andFilterWhere(['like', 'idTelegram', $this->idTelegram])
-            ->andFilterWhere(['like', 'Mail', $this->Mail])
-             ->andFilterWhere(['like', 'Rol.Descripcion', $this->rol]);
+        $query->andFilterWhere(['like', 'Guardavidas.Nombre', $this->guardavidas])
+             ->andFilterWhere(['like', 'Balneario.Nombre', $this->balneario]);
 
         return $dataProvider;
     }

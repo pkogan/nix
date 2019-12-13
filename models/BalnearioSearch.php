@@ -4,22 +4,21 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Guardavidas;
+use app\models\Balneario;
 
 /**
- * GuardavidasSearch represents the model behind the search form of `app\models\Guardavidas`.
+ * BalnearioSearch represents the model behind the search form of `app\models\Balneario`.
  */
-class GuardavidasSearch extends Guardavidas
+class BalnearioSearch extends Balneario
 {
-    public $rol;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['idGuardavidas', 'idRol'], 'integer'],
-            [['Nombre', 'rol','idTelegram', 'Mail'], 'safe'],
+            [['idBalneario'], 'integer'],
+            [['Nombre', 'Dirección','balneario'], 'safe'],
         ];
     }
 
@@ -41,7 +40,7 @@ class GuardavidasSearch extends Guardavidas
      */
     public function search($params)
     {
-        $query = Guardavidas::find()->innerJoinWith('idRol0');
+        $query = Balneario::find();
 
         // add conditions that should always apply here
 
@@ -59,14 +58,11 @@ class GuardavidasSearch extends Guardavidas
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'idGuardavidas' => $this->idGuardavidas,
-            'idRol' => $this->idRol,
+            'idBalneario' => $this->idBalneario,
         ]);
 
         $query->andFilterWhere(['like', 'Nombre', $this->Nombre])
-            ->andFilterWhere(['like', 'idTelegram', $this->idTelegram])
-            ->andFilterWhere(['like', 'Mail', $this->Mail])
-             ->andFilterWhere(['like', 'Rol.Descripcion', $this->rol]);
+            ->andFilterWhere(['like', 'Dirección', $this->Dirección]);
 
         return $dataProvider;
     }

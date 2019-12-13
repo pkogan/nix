@@ -4,22 +4,22 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Guardavidas;
+use app\models\Puesto;
 
 /**
- * GuardavidasSearch represents the model behind the search form of `app\models\Guardavidas`.
+ * PuestoSearch represents the model behind the search form of `app\models\Puesto`.
  */
-class GuardavidasSearch extends Guardavidas
+class PuestoSearch extends Puesto
 {
-    public $rol;
+    public $balneario;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['idGuardavidas', 'idRol'], 'integer'],
-            [['Nombre', 'rol','idTelegram', 'Mail'], 'safe'],
+            [['idPuesto', 'idBalneario'], 'integer'],
+            [['Nombre', 'Lugar','balneario'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class GuardavidasSearch extends Guardavidas
      */
     public function search($params)
     {
-        $query = Guardavidas::find()->innerJoinWith('idRol0');
+        $query = Puesto::find()->innerJoinWith('idBalneario0');
 
         // add conditions that should always apply here
 
@@ -59,14 +59,13 @@ class GuardavidasSearch extends Guardavidas
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'idGuardavidas' => $this->idGuardavidas,
-            'idRol' => $this->idRol,
+            'idPuesto' => $this->idPuesto,
+            'idBalneario' => $this->idBalneario,
         ]);
 
-        $query->andFilterWhere(['like', 'Nombre', $this->Nombre])
-            ->andFilterWhere(['like', 'idTelegram', $this->idTelegram])
-            ->andFilterWhere(['like', 'Mail', $this->Mail])
-             ->andFilterWhere(['like', 'Rol.Descripcion', $this->rol]);
+        $query->andFilterWhere(['like', 'Puesto.Nombre', $this->Nombre])
+            ->andFilterWhere(['like', 'Lugar', $this->Lugar])
+            ->andFilterWhere(['like','Balneario.Nombre',$this->balneario]);
 
         return $dataProvider;
     }

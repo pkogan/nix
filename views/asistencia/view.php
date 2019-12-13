@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <!--    <p>
     <?= Html::a('Update', ['update', 'id' => $model->idAsistencia], ['class' => 'btn btn-primary']) ?>
+    
     <?=
     Html::a('Delete', ['delete', 'id' => $model->idAsistencia], [
         'class' => 'btn btn-danger',
@@ -31,8 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ])
     ?>
-    </p>-->
 
+    </p>-->
+<?php if(Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN){
+    echo Html::a('CrearPuesto', ['/puesto/creardesdeasistencia', 'id' => $model->idAsistencia], ['class' => 'btn btn-primary']);
+} ?>
     <?php
     $atributes = [
         'idAsistencia',

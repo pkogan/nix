@@ -3,21 +3,16 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\Guardavidas;
-use app\models\GuardavidasSearch;
-
+use app\models\GuardavidasPuesto;
+use app\models\GuardavidasPuestoSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-use yii\filters\AccessControl;
-use app\models\AccessRule;
-
-
 /**
- * GuardavidasController implements the CRUD actions for Guardavidas model.
+ * GuardavidasPuestoController implements the CRUD actions for GuardavidasPuesto model.
  */
-class GuardavidasController extends Controller
+class GuardavidasPuestoController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -31,37 +26,16 @@ class GuardavidasController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-            
-             'access' => [
-                   'class' => AccessControl::className(),
-                   // We will override the default rule config with the new AccessRule class
-                   'ruleConfig' => [
-                       'class' => AccessRule::className(),
-                   ],
-                   'only' => ['index','create', 'update', 'delete'],
-                   'rules' => [
-                       [
-                           'actions' => ['index','create', 'update', 'delete'],
-                           'allow' => true,
-                           // Allow users, moderators and admins to create
-                           'roles' => [
-                           \app\models\Asistencia::ROL_ADMIN
-                           ],
-                       ],
-                   ],
-               ],
-            
-            
         ];
     }
 
     /**
-     * Lists all Guardavidas models.
+     * Lists all GuardavidasPuesto models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new GuardavidasSearch();
+        $searchModel = new GuardavidasPuestoSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -71,7 +45,7 @@ class GuardavidasController extends Controller
     }
 
     /**
-     * Displays a single Guardavidas model.
+     * Displays a single GuardavidasPuesto model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -84,16 +58,16 @@ class GuardavidasController extends Controller
     }
 
     /**
-     * Creates a new Guardavidas model.
+     * Creates a new GuardavidasPuesto model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Guardavidas();
+        $model = new GuardavidasPuesto();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idGuardavidas]);
+            return $this->redirect(['view', 'id' => $model->idGuardavidasPuesto]);
         }
 
         return $this->render('create', [
@@ -102,7 +76,7 @@ class GuardavidasController extends Controller
     }
 
     /**
-     * Updates an existing Guardavidas model.
+     * Updates an existing GuardavidasPuesto model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -113,7 +87,7 @@ class GuardavidasController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->idGuardavidas]);
+            return $this->redirect(['view', 'id' => $model->idGuardavidasPuesto]);
         }
 
         return $this->render('update', [
@@ -122,7 +96,7 @@ class GuardavidasController extends Controller
     }
 
     /**
-     * Deletes an existing Guardavidas model.
+     * Deletes an existing GuardavidasPuesto model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -136,15 +110,15 @@ class GuardavidasController extends Controller
     }
 
     /**
-     * Finds the Guardavidas model based on its primary key value.
+     * Finds the GuardavidasPuesto model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Guardavidas the loaded model
+     * @return GuardavidasPuesto the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Guardavidas::findOne($id)) !== null) {
+        if (($model = GuardavidasPuesto::findOne($id)) !== null) {
             return $model;
         }
 

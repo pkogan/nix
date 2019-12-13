@@ -4,20 +4,20 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Guardavidas */
+/* @var $model app\models\Puesto */
 
-$this->title = $model->idGuardavidas;
-$this->params['breadcrumbs'][] = ['label' => 'Guardavidas', 'url' => ['index']];
+$this->title = $model->idPuesto;
+$this->params['breadcrumbs'][] = ['label' => 'Puestos', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="guardavidas-view">
+<div class="puesto-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->idGuardavidas], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->idGuardavidas], [
+        <?= Html::a('Update', ['update', 'id' => $model->idPuesto], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->idPuesto], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -29,11 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'idGuardavidas',
+            'idPuesto',
             'Nombre',
-            ['label'=>'Rol','value'=>$model->idRol0->Descripcion],//'idRol0.Descripcion']
-            'idTelegram',
-            'Mail',
+            'idBalneario',
+            'Lugar',
         ],
     ]) ?>
 
