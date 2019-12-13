@@ -42,7 +42,7 @@ AppAsset::register($this);
             
             //['label' => 'Registros', 'url' => ['/asistencia'],'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Mapa', 'url' => ['/asistencia/mapa'],'visible' => !Yii::$app->user->isGuest],
-            ['label' => 'Usuarios', 'url' => ['/guardavidas'],'visible' => Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN],
+            ['label' => 'Usuarios', 'url' => ['/guardavidas'],'visible' => !Yii::$app->user->isGuest && Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (
