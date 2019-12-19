@@ -49,6 +49,7 @@ class AsistenciaSearch extends Asistencia
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['idAsistencia' => SORT_DESC]]
         ]);
 
         $this->load($params);

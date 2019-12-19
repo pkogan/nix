@@ -129,6 +129,7 @@ class BD extends PDO {
     }
 
     public function buscarAsistenciaAbierta($request) {
+
         $idGuardavidas = $this->buscarGuardavidas($request);
         $estadoAbierta = BD::ESTADO_ABIERTA;
         $sql = "select * from Asistencia where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estadoAbierta";
@@ -197,10 +198,17 @@ class BD extends PDO {
     }
 
     public function mostrarAsistencia($idAsistencia) {
-        $sql = "SELECT a.idAsistencia,a.Fecha, t.Descripcion as Tipo,Observacion,Lugar, sum(v.Cantidad) Victimas, count(ar.idArchivo) Archivos FROM Asistencia a 
+        /* @var $asistencia \app\models\Asistencia */
+
+        //$asistencia= Asistencia::find()->where("idAsistencia=$idAsistencia")->one();
+
+        $sql = "SELECT a.idAsistencia,a.Fecha, t.Descripcion as Tipo,Observacion,Lugar, sum(v.Cantidad) Victimas, count(ar.idArchivo) Archivos,c.Descripcion as Complejidad, idIncidente FROM Asistencia a 
 inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia
+left outer join Incidente i on a.idAsistencia=i.idAsistencia
+left outer join Complejidad c on c.idComplejidad=i.idComplejidad
 left outer join Victima v on a.idAsistencia=v.idAsistencia
 left outer join Archivos ar on a.idAsistencia=ar.idAsistencia
+
         where a.idAsistencia=$idAsistencia
 group by a.idAsistencia";
         $asistencia = $this->consulta($sql);
@@ -211,9 +219,39 @@ group by a.idAsistencia";
             foreach ($rangoEtario as $key => $value) {
                 $strRango[] = $value['Cantidad'] . ' ' . $value['Descripcion'];
             }
-            $strRango = '(' . implode(', ', $strRango) . ') ';
+            $strRango = ', ' . implode(', ', $strRango) ;
         }
-        $mensaje = 'Alta Registro. ' . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . ' ' . $strRango . $asistencia[0]['Observacion'];
+        $primerosAuxilios = $this->consulta("Select * from PrimerosAuxiliosIncidente pi inner join PrimerosAuxilios p on p.idPrimerosAuxilios=pi.idPrimerosAuxilios where idIncidente=".asistencia[0]['idIncidente']);
+        if (count($primerosAuxilios)>0) {
+            $strPA = [];
+
+            foreach ($primerosAuxilios as $key => $value) {
+                $strPA[] = $value['Descripcion'] ;
+            }
+            $strPA = ', (' . implode(', ', $strPA) . ') ';
+        }else{
+            $strPA="";
+        }
+        
+        if ($asistencia[0]['Complejidad'] != "") {
+            $complejidad = ', de complejidad '.$asistencia[0]['Complejidad'];
+        } else {
+            $complejidad = '';
+        }
+        if ($asistencia[0]['Archivos'] >0) {
+            $archivos = ', '.$asistencia[0]['Archivos'].' archivos';
+        } else {
+            $archivos = '';
+        }
+        if ($asistencia[0]['Observacion']!='') {
+            $obs=$asistencia[0]['Observacion'];
+        } else {
+            $obs = ', sin observación.';
+        }
+        
+        
+        $mensaje = "Esta seguro de Guardar el Registro?\n" . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . $complejidad. $strRango . $strPA. $archivos. $obs;
+        //$mensaje = 'Alta Registro. ' . $asistencia->idTipo0->Descripcion . ' #' . $asistencia->idAsistencia . ' ' . $asistencia->Fecha . ' ' .  $asistencia[0]['Observacion'];
         return $mensaje;
     }
 

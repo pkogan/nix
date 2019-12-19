@@ -166,6 +166,7 @@ class TELEGRAM {
 
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->callback_query->from);
             $callback_query_id = $request->callback_query->id;
+
             if ($idAsistencia != 0) {
                 if ($callback[0] == 'Complejidad') {
                     //actualiza complejidad
@@ -180,13 +181,11 @@ class TELEGRAM {
                     $this->sendAswerCallback($callback_query_id, 'Primeros Auxilios Agregados');
                 } elseif ($callback[0] == 'Guardar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_CERRADA);
-                    $this->sendAswerCallback($callback_query_id, 'Registro #'.$idAsistencia. ' Guardado');
+                    $this->sendMessage($request->callback_query->message->chat->id, 'Registro #' . $idAsistencia . ' Guardado');
                 } elseif ($callback[0] == 'Cancelar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_BAJA);
-                    $this->sendAswerCallback($callback_query_id, 'Registro #'.$idAsistencia. ' Cancelado');
-                
+                    $this->sendMessage($request->callback_query->message->chat->id, 'Registro #' . $idAsistencia . ' Cancelado');
                 }
-                
             } else {
                 $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /primerosauxilios o /rescate?');
             }
@@ -201,12 +200,37 @@ class TELEGRAM {
             } elseif ($request->message->text == '/rescate') {
                 /* Guarda Asistencia Vinculado al Guardavidas, Fecha, */
                 if ($idAsistencia != 0) {
-                    $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id, $datos);
-                }
-                $this->bd->insertRescate($request->message->from);
+                    $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
+                    $this->cerrarMsg($idAsistencia, $request);
+                } else {
+                    $this->bd->insertRescate($request->message->from);
 
-                $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario')/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario')/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
+                }
+            } elseif ($request->message->text == '/prevencion') {
+                if ($idAsistencia != 0) {
+                    $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
+                    $this->cerrarMsg($idAsistencia, $request);
+                } else {
+                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_PREVENCION);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Prevención, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario')]);
+                }
+            } elseif ($request->message->text == '/primerosauxilios') {
+                if ($idAsistencia != 0) {
+                    $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
+                    $this->cerrarMsg($idAsistencia, $request);
+                } else {
+                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_PRIMEROSAUXILIOS);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Primeros Auxilios, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario'), $this->bd->getDescripciones('PrimerosAuxilios')]);
+                }
+            } elseif ($request->message->text == '/novedad') {
+                if ($idAsistencia != 0) {
+                    $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
+                    $this->cerrarMsg($idAsistencia, $request);
+                } else {
+                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD);
+                    $this->sendMessage($request->message->chat->id, 'Complete la Novedad, Comparta posición geográfica, foto y audio.');
+                }
             } elseif (isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
 
                 if ($idAsistencia != 0) {
@@ -221,27 +245,6 @@ class TELEGRAM {
                 } else {
                     $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /novedad, /primerosauxilios o /rescate?');
                 }
-            } elseif ($request->message->text == '/prevencion') {
-                if ($idAsistencia != 0) {
-                    $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id, $datos);
-                }
-                $this->bd->insertAsistencia($request->message->from, BD::TIPO_PREVENCION);
-                $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Prevención, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario')]);
-            } elseif ($request->message->text == '/primerosauxilios') {
-                if ($idAsistencia != 0) {
-                    $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id, $datos);
-                }
-                $this->bd->insertAsistencia($request->message->from, BD::TIPO_PRIMEROSAUXILIOS);
-                $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Primeros Auxilios, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario'), $this->bd->getDescripciones('PrimerosAuxilios')]);
-            } elseif ($request->message->text == '/novedad') {
-                if ($idAsistencia != 0) {
-                    $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id, $datos);
-                }
-                $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD);
-                $this->sendMessage($request->message->chat->id, 'Complete la Novedad, Comparta posición geográfica, foto y audio.');
             } elseif (substr($request->message->text, 0, 6) == '/fecha') {
                 if ($idAsistencia != 0) {
 
@@ -270,8 +273,8 @@ class TELEGRAM {
         if ($idAsistencia != 0) {
             $botones = [['text' => 'Guardar', 'callback_data' => 'Guardar' . '-' . $idAsistencia],
                     ['text' => 'Cancelar', 'callback_data' => 'Cancelar' . '-' . $idAsistencia]];
-            $datos = $this->bd->buscarAsistencia($idAsistencia);
-            $this->sendMessage($request->message->chat->id, $datos, $botones);
+            $datos = $this->bd->mostrarAsistencia($idAsistencia);
+            $this->sendMessage($request->message->chat->id, $datos, [$botones]);
         } else {
             $this->sendMessage($request->message->chat->id, 'No hay un registro abierto');
         }
