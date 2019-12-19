@@ -47,16 +47,17 @@ class BD extends PDO {
         }
     }
 
-    public function buscarUsuario($request){
-        $idGuardavidas=$this->buscarGuardavidas($request);
+    public function buscarUsuario($request) {
+        $idGuardavidas = $this->buscarGuardavidas($request);
         $sql = "select * from Guardavidas where idGuardavidas=\"$idGuardavidas\"";
         $guardavidas = $this->consulta($sql);
         if (count($guardavidas) != 1) {
             return null;
-        }else{
+        } else {
             return $guardavidas[0];
         }
     }
+
     /* Busca Guardavidas y si no lo encuentra lo agrega. retorna idGuardavidas */
 
     public function buscarGuardavidas($request) {
@@ -212,7 +213,7 @@ group by a.idAsistencia";
             }
             $strRango = '(' . implode(', ', $strRango) . ') ';
         }
-        $mensaje = 'Alta Registro. '.$asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . ' ' . $strRango  . $asistencia[0]['Observacion'];
+        $mensaje = 'Alta Registro. ' . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . ' ' . $strRango . $asistencia[0]['Observacion'];
         return $mensaje;
     }
 
@@ -230,6 +231,19 @@ group by a.idAsistencia";
         } else {
             return $idAsistencia;
         }
+    }
+
+    public function updateEstadoAsistencia($idAsistencia, $idEstadoAsistencia) {
+
+        if ($idAsistencia != 0) {
+            $sql = "update Asistencia set idEstadoAsistencia=$idEstadoAsistencia where idAsistencia=$idAsistencia";
+            try {
+                $this->prepare($sql)->execute();
+            } catch (PDOException $e) {
+                return $e->getMessage();
+            }
+        }
+        return $idAsistencia;
     }
 
     public function insertArchivo($idAsistencia, $path) {

@@ -20,14 +20,14 @@ class TELEGRAM {
 
     /**
      *
-     * @var \BD\BD
+     * @var \telegram\BD
      */
     private $bd;
 
     public function __construct() {
         include 'config.php';
         $this->TOKEN = $config['TOKEN'];
-        $this->file_log= $config['file_log'];
+        $this->file_log = $config['file_log'];
     }
 
     public function setBD($bd) {
@@ -83,25 +83,27 @@ class TELEGRAM {
 
         /*         * *************** */
     }
-    public function procesarBotones($buttons){
+
+    public function procesarBotones($buttons) {
         //se divide en lineas de a 4 botones
-        $botones4=[];
-        $row=[];
-        foreach ($buttons as  $rowActual) {
-            foreach ($rowActual as $key =>$value){
-                if($key==4){
-                    $botones4[]=$row;
-                    $row=[];
+        $botones4 = [];
+        $row = [];
+        foreach ($buttons as $rowActual) {
+            foreach ($rowActual as $key => $value) {
+                if ($key == 4) {
+                    $botones4[] = $row;
+                    $row = [];
                 }
-                $row[]=$value;
+                $row[] = $value;
             }
-            if(count($row)>0){
-                $botones4[]=$row;
-                $row=[];
+            if (count($row) > 0) {
+                $botones4[] = $row;
+                $row = [];
             }
         }
         return $botones4;
     }
+
     public function sendMessage($chatId, $text, $buttons = null) {
         /**
           Para setear en webhook hay que:
@@ -176,20 +178,26 @@ class TELEGRAM {
                 } elseif ($callback[0] == 'PrimerosAuxilios') {
                     $this->bd->updatePrimerosAuxilios($idAsistencia, $callback);
                     $this->sendAswerCallback($callback_query_id, 'Primeros Auxilios Agregados');
+                } elseif ($callback[0] == 'Guardar') {
+                    $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_CERRADA);
+                    $this->sendAswerCallback($callback_query_id, 'Registro #'.$idAsistencia. ' Guardado');
+                } elseif ($callback[0] == 'Cancelar') {
+                    $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_BAJA);
+                    $this->sendAswerCallback($callback_query_id, 'Registro #'.$idAsistencia. ' Cancelado');
+                
                 }
+                
             } else {
                 $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /primerosauxilios o /rescate?');
             }
-        } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/web','/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
+        } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/web', '/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
             if ($request->message->text == '/start') {
                 $this->sendMessage($request->message->chat->id, 'Hola ' . $request->message->from->first_name);
                 $this->sendMessage($request->message->chat->id, 'Este es el Chatbot de nix "el Libro de Aguas"');
                 $this->sendMessage($request->message->chat->id, '/prevencion, /novedad, /primerosauxilios o /rescate?');
             } elseif ($request->message->text == '/cerrar') {
-                $datos = $this->bd->cerrarAsistencia($request->message->from);
-
-                $this->sendMessage($request->message->chat->id,  $datos);
+                $this->cerrarMsg($idAsistencia, $request);
             } elseif ($request->message->text == '/rescate') {
                 /* Guarda Asistencia Vinculado al Guardavidas, Fecha, */
                 if ($idAsistencia != 0) {
@@ -198,8 +206,7 @@ class TELEGRAM {
                 }
                 $this->bd->insertRescate($request->message->from);
 
-                $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.',
-                        [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario')/*, $this->bd->getDescripciones('PrimerosAuxilios')*/]);
+                $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario')/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
             } elseif (isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
 
                 if ($idAsistencia != 0) {
@@ -217,34 +224,37 @@ class TELEGRAM {
             } elseif ($request->message->text == '/prevencion') {
                 if ($idAsistencia != 0) {
                     $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id,  $datos);
+                    $this->sendMessage($request->message->chat->id, $datos);
                 }
                 $this->bd->insertAsistencia($request->message->from, BD::TIPO_PREVENCION);
                 $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Prevención, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario')]);
             } elseif ($request->message->text == '/primerosauxilios') {
                 if ($idAsistencia != 0) {
                     $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id,  $datos);
+                    $this->sendMessage($request->message->chat->id, $datos);
                 }
                 $this->bd->insertAsistencia($request->message->from, BD::TIPO_PRIMEROSAUXILIOS);
                 $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Primeros Auxilios, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario'), $this->bd->getDescripciones('PrimerosAuxilios')]);
             } elseif ($request->message->text == '/novedad') {
                 if ($idAsistencia != 0) {
                     $datos = $this->bd->cerrarAsistencia($request->message->from);
-                    $this->sendMessage($request->message->chat->id,  $datos);
+                    $this->sendMessage($request->message->chat->id, $datos);
                 }
                 $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD);
                 $this->sendMessage($request->message->chat->id, 'Complete la Novedad, Comparta posición geográfica, foto y audio.');
-            }elseif (substr($request->message->text, 0, 6) == '/fecha') {
+            } elseif (substr($request->message->text, 0, 6) == '/fecha') {
                 if ($idAsistencia != 0) {
+
+                    //verificar que la fecha tenga parámetros Fecha
+
                     $this->bd->updateFecha($idAsistencia, substr($request->message->text, 7, strlen($request->message->text)));
                     $this->sendMessage($request->message->chat->id, 'Fecha Actualizada');
                 } else {
                     $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /novedad, /primerosauxilios o /rescate?');
                 }
             } elseif ($request->message->text == '/web') {
-                $usuario=$this->bd->buscarUsuario($request->message->from);
-                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.fi.uncoma.edu.ar/index.php?r=site/login con Usuario:'.$usuario['Nombre'].', Clave:'.$usuario['idTelegram']);
+                $usuario = $this->bd->buscarUsuario($request->message->from);
+                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.fi.uncoma.edu.ar/index.php?r=site/login con Usuario:' . $usuario['Nombre'] . ', Clave:' . $usuario['idTelegram']);
             }
         } else {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
@@ -253,6 +263,17 @@ class TELEGRAM {
             } else {
                 $this->sendMessage($request->message->chat->id, 'Comando desconocido /prevencion, /novedad, /primerosauxilios o /rescate?');
             }
+        }
+    }
+
+    function cerrarMsg($idAsistencia, $request) {
+        if ($idAsistencia != 0) {
+            $botones = [['text' => 'Guardar', 'callback_data' => 'Guardar' . '-' . $idAsistencia],
+                    ['text' => 'Cancelar', 'callback_data' => 'Cancelar' . '-' . $idAsistencia]];
+            $datos = $this->bd->buscarAsistencia($idAsistencia);
+            $this->sendMessage($request->message->chat->id, $datos, $botones);
+        } else {
+            $this->sendMessage($request->message->chat->id, 'No hay un registro abierto');
         }
     }
 
