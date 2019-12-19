@@ -181,9 +181,11 @@ class TELEGRAM {
                     $this->sendAswerCallback($callback_query_id, 'Primeros Auxilios Agregados');
                 } elseif ($callback[0] == 'Guardar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_CERRADA);
+                    $this->sendAswerCallback($callback_query_id, 'Registro #' . $idAsistencia . ' Guardado');
                     $this->sendMessage($request->callback_query->message->chat->id, 'Registro #' . $idAsistencia . ' Guardado');
                 } elseif ($callback[0] == 'Cancelar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_BAJA);
+                    $this->sendAswerCallback($callback_query_id, 'Registro #' . $idAsistencia . ' Cancelado');
                     $this->sendMessage($request->callback_query->message->chat->id, 'Registro #' . $idAsistencia . ' Cancelado');
                 }
             } else {
