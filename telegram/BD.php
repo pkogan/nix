@@ -221,6 +221,21 @@ group by a.idAsistencia";
             }
             $strRango = ', ' . implode(', ', $strRango) ;
         }
+        $sql="Select * from AsistenciaEquipamiento a inner join Equipamiento e on a.idEquipamiento=e.idEquipamiento where idAsistencia=$idAsistencia";
+        echo $sql;
+	$equipamiento = $this->consulta($sql);
+        if (count($equipamiento)>0) {
+            $strEquipamiento = [];
+
+            foreach ($equipamiento as $key => $value) {
+                $strEquipamiento[] = $value['Descripcion'];
+            }
+            $strEquipamiento = ', Equipamiento:' . implode(', ', $strEquipamiento) ;
+        }else{
+            $strEquipamiento="";
+        }
+
+
         $primerosAuxilios = $this->consulta("Select * from PrimerosAuxiliosIncidente pi inner join PrimerosAuxilios p on p.idPrimerosAuxilios=pi.idPrimerosAuxilios where idIncidente=".asistencia[0]['idIncidente']);
         if (count($primerosAuxilios)>0) {
             $strPA = [];
@@ -250,7 +265,7 @@ group by a.idAsistencia";
         }
         
         
-        $mensaje = "Esta seguro de Guardar el Registro?\n" . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . $complejidad. $strRango . $strPA. $archivos. $obs;
+        $mensaje = "Esta seguro de Guardar el Registro?\n" . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . $complejidad. $strRango . $strPA. $strEquipamiento. $archivos. $obs;
         //$mensaje = 'Alta Registro. ' . $asistencia->idTipo0->Descripcion . ' #' . $asistencia->idAsistencia . ' ' . $asistencia->Fecha . ' ' .  $asistencia[0]['Observacion'];
         return $mensaje;
     }
@@ -321,6 +336,28 @@ group by a.idAsistencia";
             } catch (PDOException $e) {
                 return $e->getMessage();
             }
+        }
+    }
+    public function updateEquipamiento($idAsistencia, $datos) {
+
+        if ($datos[0] == 'Equipamiento') {
+            $idEquipamiento = $datos[1];
+
+            $sql = "select * from AsistenciaEquipamiento       where idAsistencia=$idAsistencia and idEquipamiento=$idEquipamiento";
+            echo $sql;
+            $equipamiento = $this->consulta($sql);
+            //print_r($victima);
+            if (count($equipamiento) == 0) {
+                //INSERT INTO `Victima`(`idVictima`, `idGenero`, `idRangoEtario`, `Cantidad`, `idProcedencia`, `idAsistencia`) VALUES ([value-1],[value-2],[value-3],[v$
+                //para prototipo genero Otres y Procedencia Locales
+                $sql = "INSERT INTO `AsistenciaEquipamiento`( `idEquipamiento`, `idAsistencia`) VALUES ($idEquipamiento,$idAsistencia)";
+            
+            try {
+                $this->prepare($sql)->execute();
+            } catch (PDOException $e) {
+                return $e->getMessage();
+            }
+	}
         }
     }
 

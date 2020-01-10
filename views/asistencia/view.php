@@ -74,6 +74,15 @@ $this->params['breadcrumbs'][] = $this->title;
         }
         $atributes[] = ['label' => 'Adjuntos','format'=>'raw', 'value' => implode('<br/>', $archivos)];
     }
+    if (count($model->asistenciaEquipamientos) > 0) {
+        $equipamiento = [];
+        foreach ($model->asistenciaEquipamientos as $key => $value) {
+            /* @var $value app\models\AsistenciaEquipamiento */
+            $equipamiento[] = $value->idEquipameinto0->Descripcion;
+        }
+        $atributes[] = ['label' => 'Equipamiento', 'value' => implode(', ', $equipamiento)];
+    }
+    
     
     if (in_array($model->idTipo, [app\models\Asistencia::TIPO_RESCATE, app\models\Asistencia::TIPO_PRIMEROSAUXILIOS])) {
         $atributes[] = ['label' => 'Complejidad', 'value' => $model->incidentes[0]->idComplejidad0->Descripcion];

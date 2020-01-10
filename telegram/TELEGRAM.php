@@ -179,13 +179,15 @@ class TELEGRAM {
                 } elseif ($callback[0] == 'PrimerosAuxilios') {
                     $this->bd->updatePrimerosAuxilios($idAsistencia, $callback);
                     $this->sendAswerCallback($callback_query_id, 'Primeros Auxilios Agregados');
-                } elseif ($callback[0] == 'Guardar') {
+                } elseif ($callback[0] == 'Equipamiento') {
+                    $this->bd->updateEquipamiento($idAsistencia, $callback);
+                    $this->sendAswerCallback($callback_query_id, 'Equipamiento Agregado');
+                } 
+elseif ($callback[0] == 'Guardar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_CERRADA);
-                    $this->sendAswerCallback($callback_query_id, 'Registro #' . $idAsistencia . ' Guardado');
                     $this->sendMessage($request->callback_query->message->chat->id, 'Registro #' . $idAsistencia . ' Guardado');
                 } elseif ($callback[0] == 'Cancelar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_BAJA);
-                    $this->sendAswerCallback($callback_query_id, 'Registro #' . $idAsistencia . ' Cancelado');
                     $this->sendMessage($request->callback_query->message->chat->id, 'Registro #' . $idAsistencia . ' Cancelado');
                 }
             } else {
@@ -207,7 +209,7 @@ class TELEGRAM {
                 } else {
                     $this->bd->insertRescate($request->message->from);
 
-                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario')/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario'),$this->bd->getDescripciones('Equipamiento','idTipoAsistencia='.BD::TIPO_RESCATE)/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
                 }
             } elseif ($request->message->text == '/prevencion') {
                 if ($idAsistencia != 0) {

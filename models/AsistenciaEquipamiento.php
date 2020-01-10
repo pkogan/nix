@@ -8,9 +8,9 @@ use Yii;
  * This is the model class for table "AsistenciaEquipamiento".
  *
  * @property int $idAsistencia
- * @property int $idEquipameinto
+ * @property int $idEquipamiento
  *
- * @property Equipamiento $idEquipameinto0
+ * @property Equipamiento $idEquipamiento0
  * @property Asistencia $idAsistencia0
  */
 class AsistenciaEquipamiento extends \yii\db\ActiveRecord
@@ -29,9 +29,9 @@ class AsistenciaEquipamiento extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idAsistencia', 'idEquipameinto'], 'required'],
-            [['idAsistencia', 'idEquipameinto'], 'integer'],
-            [['idEquipameinto'], 'exist', 'skipOnError' => true, 'targetClass' => Equipamiento::className(), 'targetAttribute' => ['idEquipameinto' => 'idEquipamiento']],
+            [['idAsistencia', 'idEquipamiento'], 'required'],
+            [['idAsistencia', 'idEquipamiento'], 'integer'],
+            [['idEquipamiento'], 'exist', 'skipOnError' => true, 'targetClass' => Equipamiento::className(), 'targetAttribute' => ['idEquipamiento' => 'idEquipamiento']],
             [['idAsistencia'], 'exist', 'skipOnError' => true, 'targetClass' => Asistencia::className(), 'targetAttribute' => ['idAsistencia' => 'idAsistencia']],
         ];
     }
@@ -43,7 +43,7 @@ class AsistenciaEquipamiento extends \yii\db\ActiveRecord
     {
         return [
             'idAsistencia' => 'Id Asistencia',
-            'idEquipameinto' => 'Id Equipameinto',
+            'idEquipamiento' => 'Id Equipameinto',
         ];
     }
 
@@ -52,7 +52,7 @@ class AsistenciaEquipamiento extends \yii\db\ActiveRecord
      */
     public function getIdEquipameinto0()
     {
-        return $this->hasOne(Equipamiento::className(), ['idEquipamiento' => 'idEquipameinto']);
+        return $this->hasOne(Equipamiento::className(), ['idEquipamiento' => 'idEquipamiento']);
     }
 
     /**
