@@ -261,7 +261,7 @@ elseif ($callback[0] == 'Guardar') {
                 }
             } elseif ($request->message->text == '/web') {
                 $usuario = $this->bd->buscarUsuario($request->message->from);
-                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.fi.uncoma.edu.ar/index.php?r=site/login&LoginForm[username]='. $usuario['Nombre'] . '&LoginForm[password]=' . $usuario['idTelegram']);
+                $this->sendMessage($request->message->chat->id, 'Ingrese a https://nix.fi.uncoma.edu.ar/index.php?r=site/login&LoginForm[username]='.str_replace(' ','%20', $usuario['Nombre'])  . '&LoginForm[password]=' . $usuario['idTelegram']);
             }
         } else {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
