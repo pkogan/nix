@@ -56,15 +56,22 @@ $this->params['breadcrumbs'][] = $this->title;
         //'Lugar',
         'latitude',
         'longitude',
+         
         'Observacion:ntext',
     ];
+    if (isset($model->idPuesto)){
+        $atributes[] = [// the owner name of the model
+            'label' => 'Puesto',
+            'value' => $model->idPuesto0->idBalneario0->Nombre.' Puesto '.$model->idPuesto0->Nombre,
+        ];
+    }
     if (count($model->victimas) > 0) {
-        $victima = [];
+        /*$victima = [];
         foreach ($model->victimas as $key => $value) {
             /* @var $value app\models\Victima */
-            $victima[] = $value->Cantidad . ' ' . $value->idRangoEtario0->Descripcion;
-        }
-        $atributes[] = ['label' => 'Victimas', 'value' => implode(', ', $victima)];
+            /*$victima[] = $value->Cantidad . ' ' . $value->idRangoEtario0->Descripcion;
+        }*/
+        $atributes[] = ['label' => 'Victimas', 'value' => $model->getVictimasStr()];
     }
     if (count($model->archivos) > 0) {
         $archivos = [];

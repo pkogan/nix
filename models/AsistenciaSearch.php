@@ -13,6 +13,7 @@ class AsistenciaSearch extends Asistencia
 {
     public $guardavidas;
     public $tipo;
+    public $puesto;
     public $dealerAvailableDate;
     /**
      * {@inheritdoc}
@@ -21,7 +22,7 @@ class AsistenciaSearch extends Asistencia
     {
         return [
             [['idAsistencia', 'idGuardavidas', 'idTipo', 'idEstadoAsistencia'], 'integer'],
-            [['Fecha', 'Lugar','guardavidas','tipo','dealerAvailableDate', 'Observacion'], 'safe'],
+            [['Fecha', 'Lugar','guardavidas','tipo','puesto','dealerAvailableDate', 'Observacion'], 'safe'],
         ];
     }
 
@@ -43,7 +44,7 @@ class AsistenciaSearch extends Asistencia
      */
     public function search($params)
     {
-        $query = Asistencia::find()->innerJoinWith('idTipo0');
+        $query = Asistencia::find()->innerJoinWith('idTipo0')->joinWith('idPuesto0');
 
         // add conditions that should always apply here
 
@@ -72,7 +73,9 @@ class AsistenciaSearch extends Asistencia
         $query->andFilterWhere(['like', 'Lugar', $this->Lugar])
             ->andFilterWhere(['like', 'Observacion', $this->Observacion])
             ->andFilterWhere(['like', 'Guardavidas.Nombre', $this->guardavidas])
-            ->andFilterWhere(['like', 'TipoAsistencia.Descripcion', $this->tipo]);
+            ->andFilterWhere(['like', 'TipoAsistencia.Descripcion', $this->tipo])
+                ->andFilterWhere(['like', 'Puesto.Nombre', $this->puesto]);
+        
 
          if(isset ($this->dealerAvailableDate)&&$this->dealerAvailableDate!=''){ //you dont need the if function if yourse sure you have a not null date
               $date_explode=explode(" - ",$this->dealerAvailableDate);

@@ -86,14 +86,19 @@ class TELEGRAM {
 
     public function procesarBotones($buttons) {
         //se divide en lineas de a 4 botones
+        
         $botones4 = [];
         $row = [];
+        $texto='';
         foreach ($buttons as $rowActual) {
             foreach ($rowActual as $key => $value) {
-                if ($key == 4) {
+                if ($key >= 4 && strlen($texto)>5) {
                     $botones4[] = $row;
                     $row = [];
+                    $texto='';
                 }
+                //print_r($value);exit();
+                $texto.=$value['text'];
                 $row[] = $value;
             }
             if (count($row) > 0) {
@@ -182,6 +187,9 @@ class TELEGRAM {
                 } elseif ($callback[0] == 'Equipamiento') {
                     $this->bd->updateEquipamiento($idAsistencia, $callback);
                     $this->sendAswerCallback($callback_query_id, 'Equipamiento Agregado');
+                }  elseif ($callback[0] == 'Puesto') {
+                    $this->bd->updatePuesto($idAsistencia, $callback);
+                    $this->sendAswerCallback($callback_query_id, 'Puesto Agregado');
                 } 
 elseif ($callback[0] == 'Guardar') {
                     $this->bd->updateEstadoAsistencia($idAsistencia, BD::ESTADO_CERRADA);
@@ -195,6 +203,12 @@ elseif ($callback[0] == 'Guardar') {
             }
         } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/web', '/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
+            $balenario=$this->bd->buscarBalnearioActual($request->message->from);
+            if($balenario!=null){
+                $balenario=' Puesto en Balnerio '.$balenario['Balneario'].', ';
+            }else{
+                $balenario='';
+            }
             if ($request->message->text == '/start') {
                 $this->sendMessage($request->message->chat->id, 'Hola ' . $request->message->from->first_name);
                 $this->sendMessage($request->message->chat->id, 'Este es el Chatbot de nix "el Libro de Aguas"');
@@ -209,7 +223,7 @@ elseif ($callback[0] == 'Guardar') {
                 } else {
                     $this->bd->insertRescate($request->message->from);
 
-                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario'),$this->bd->getDescripciones('Equipamiento','idTipoAsistencia='.BD::TIPO_RESCATE)/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, '.$balenario.'Comparta posición geográfica, foto y audio.', [$this->bd->getDescripcionesPuestos($request->message->from),$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario'),$this->bd->getDescripciones('Equipamiento','idTipoAsistencia='.BD::TIPO_RESCATE)/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
                 }
             } elseif ($request->message->text == '/prevencion') {
                 if ($idAsistencia != 0) {
@@ -217,7 +231,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
                     $this->bd->insertAsistencia($request->message->from, BD::TIPO_PREVENCION);
-                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Prevención, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario')]);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Prevención, '.$balenario.'Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario')]);
                 }
             } elseif ($request->message->text == '/primerosauxilios') {
                 if ($idAsistencia != 0) {
@@ -225,7 +239,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
                     $this->bd->insertAsistencia($request->message->from, BD::TIPO_PRIMEROSAUXILIOS);
-                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Primeros Auxilios, Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario'), $this->bd->getDescripciones('PrimerosAuxilios')]);
+                    $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Primeros Auxilios, '.$balenario.' Comparta posición geográfica, foto y audio.', [$this->bd->getDescripciones('RangoEtario'), $this->bd->getDescripciones('PrimerosAuxilios')]);
                 }
             } elseif ($request->message->text == '/novedad') {
                 if ($idAsistencia != 0) {

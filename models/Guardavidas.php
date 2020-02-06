@@ -82,8 +82,10 @@ class Guardavidas extends \yii\db\ActiveRecord implements \yii\web\IdentityInter
      * @return \yii\db\ActiveQuery
      */
     public function getGuardavidasPuestos() {
-        return $this->hasMany(GuardavidasPuesto::className(), ['idGuardavidas' => 'idGuardavidas']);
+        return $this->hasMany(GuardavidasPuesto::className(), ['idGuardavidas' => 'idGuardavidas'])->orderBy(['Fecha' => SORT_DESC]);
     }
+    
+
 
     public static function findIdentity($id) {
         return static::findOne($id);

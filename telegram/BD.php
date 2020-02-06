@@ -166,7 +166,19 @@ class BD extends PDO {
 
         return $sql;
     }
+    public function updatePuesto($idAsistencia, $datos) {
 
+        $idPuesto = $datos[1];
+        
+        $sql = "update Asistencia set idPuesto=$idPuesto where idAsistencia=$idAsistencia";
+        try {
+            $this->prepare($sql)->execute();
+        } catch (PDOException $e) {
+            return $e->getMessage();
+        }
+
+        return $sql;
+    }
     public function updateFecha($idAsistencia, $Fecha) {
 
         $sql = "update Asistencia set Fecha=\"$Fecha\" where idAsistencia=$idAsistencia";
@@ -202,12 +214,14 @@ class BD extends PDO {
 
         //$asistencia= Asistencia::find()->where("idAsistencia=$idAsistencia")->one();
 
-        $sql = "SELECT a.idAsistencia,a.Fecha, t.Descripcion as Tipo,Observacion,Lugar, sum(v.Cantidad) Victimas, count(ar.idArchivo) Archivos,c.Descripcion as Complejidad, idIncidente FROM Asistencia a 
+        $sql = "SELECT a.idAsistencia,a.Fecha, t.Descripcion as Tipo,Observacion,a.Lugar,p.Nombre as Puesto, b.Nombre as Balneario, sum(v.Cantidad) Victimas, count(ar.idArchivo) Archivos,c.Descripcion as Complejidad, idIncidente FROM Asistencia a 
 inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia
 left outer join Incidente i on a.idAsistencia=i.idAsistencia
 left outer join Complejidad c on c.idComplejidad=i.idComplejidad
 left outer join Victima v on a.idAsistencia=v.idAsistencia
 left outer join Archivos ar on a.idAsistencia=ar.idAsistencia
+left outer join Puesto p on p.idPuesto=a.idPuesto
+left outer join Balneario b on p.idBalneario=b.idBalneario
 
         where a.idAsistencia=$idAsistencia
 group by a.idAsistencia";
@@ -219,53 +233,57 @@ group by a.idAsistencia";
             foreach ($rangoEtario as $key => $value) {
                 $strRango[] = $value['Cantidad'] . ' ' . $value['Descripcion'];
             }
-            $strRango = ', ' . implode(', ', $strRango) ;
+            $strRango = ', ' . implode(', ', $strRango);
         }
-        $sql="Select * from AsistenciaEquipamiento a inner join Equipamiento e on a.idEquipamiento=e.idEquipamiento where idAsistencia=$idAsistencia";
+        $sql = "Select * from AsistenciaEquipamiento a inner join Equipamiento e on a.idEquipamiento=e.idEquipamiento where idAsistencia=$idAsistencia";
         echo $sql;
-	$equipamiento = $this->consulta($sql);
-        if (count($equipamiento)>0) {
+        $equipamiento = $this->consulta($sql);
+        if (count($equipamiento) > 0) {
             $strEquipamiento = [];
 
             foreach ($equipamiento as $key => $value) {
                 $strEquipamiento[] = $value['Descripcion'];
             }
-            $strEquipamiento = ', Equipamiento:' . implode(', ', $strEquipamiento) ;
-        }else{
-            $strEquipamiento="";
+            $strEquipamiento = ', Equipamiento:' . implode(', ', $strEquipamiento);
+        } else {
+            $strEquipamiento = "";
         }
 
 
-        $primerosAuxilios = $this->consulta("Select * from PrimerosAuxiliosIncidente pi inner join PrimerosAuxilios p on p.idPrimerosAuxilios=pi.idPrimerosAuxilios where idIncidente=".asistencia[0]['idIncidente']);
-        if (count($primerosAuxilios)>0) {
+        $primerosAuxilios = $this->consulta("Select * from PrimerosAuxiliosIncidente pi inner join PrimerosAuxilios p on p.idPrimerosAuxilios=pi.idPrimerosAuxilios where idIncidente=" . asistencia[0]['idIncidente']);
+        if (count($primerosAuxilios) > 0) {
             $strPA = [];
 
             foreach ($primerosAuxilios as $key => $value) {
-                $strPA[] = $value['Descripcion'] ;
+                $strPA[] = $value['Descripcion'];
             }
             $strPA = ', (' . implode(', ', $strPA) . ') ';
-        }else{
-            $strPA="";
+        } else {
+            $strPA = "";
         }
-        
+
         if ($asistencia[0]['Complejidad'] != "") {
-            $complejidad = ', de complejidad '.$asistencia[0]['Complejidad'];
+            $complejidad = ', de complejidad ' . $asistencia[0]['Complejidad'];
         } else {
             $complejidad = '';
         }
-        if ($asistencia[0]['Archivos'] >0) {
-            $archivos = ', '.$asistencia[0]['Archivos'].' archivos';
+        if ($asistencia[0]['Archivos'] > 0) {
+            $archivos = ', ' . $asistencia[0]['Archivos'] . ' archivos';
         } else {
             $archivos = '';
         }
-        if ($asistencia[0]['Observacion']!='') {
-            $obs=$asistencia[0]['Observacion'];
+        if ($asistencia[0]['Observacion'] != '') {
+            $obs = $asistencia[0]['Observacion'];
         } else {
             $obs = ', sin observación.';
         }
-        
-        
-        $mensaje = "Esta seguro de Guardar el Registro?\n" . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $asistencia[0]['Fecha'] . $complejidad. $strRango . $strPA. $strEquipamiento. $archivos. $obs;
+        if ($asistencia[0]['Puesto'] != '') {
+            $puesto = 'en Balneario '.$asistencia[0]['Balneario'].' Puesto '.$asistencia[0]['Puesto'].', ';
+        } else {
+            $puesto = '';
+        }
+
+        $mensaje = "Esta seguro de Guardar el Registro?\n" . $asistencia[0]['Tipo'] . ' #' . $idAsistencia . ' ' . $puesto.$asistencia[0]['Fecha'] . $complejidad . $strRango . $strPA . $strEquipamiento . $archivos . $obs;
         //$mensaje = 'Alta Registro. ' . $asistencia->idTipo0->Descripcion . ' #' . $asistencia->idAsistencia . ' ' . $asistencia->Fecha . ' ' .  $asistencia[0]['Observacion'];
         return $mensaje;
     }
@@ -338,6 +356,7 @@ group by a.idAsistencia";
             }
         }
     }
+
     public function updateEquipamiento($idAsistencia, $datos) {
 
         if ($datos[0] == 'Equipamiento') {
@@ -351,13 +370,13 @@ group by a.idAsistencia";
                 //INSERT INTO `Victima`(`idVictima`, `idGenero`, `idRangoEtario`, `Cantidad`, `idProcedencia`, `idAsistencia`) VALUES ([value-1],[value-2],[value-3],[v$
                 //para prototipo genero Otres y Procedencia Locales
                 $sql = "INSERT INTO `AsistenciaEquipamiento`( `idEquipamiento`, `idAsistencia`) VALUES ($idEquipamiento,$idAsistencia)";
-            
-            try {
-                $this->prepare($sql)->execute();
-            } catch (PDOException $e) {
-                return $e->getMessage();
+
+                try {
+                    $this->prepare($sql)->execute();
+                } catch (PDOException $e) {
+                    return $e->getMessage();
+                }
             }
-	}
         }
     }
 
@@ -398,17 +417,52 @@ group by a.idAsistencia";
             return $e->getMessage();
         }
     }
+    public function buscarBalnearioActual($request){
+        $idGuardavidas = $this->buscarGuardavidas($request);
 
-    public function getDescripciones($tabla, $where = null) {
+        $sql = "select p.*,b.Nombre as Balneario from GuardavidasPuesto gp inner join Puesto p on gp.idPuesto= p.idPuesto
+                inner join Balneario b on b.idBalneario=p.idBalneario where idGuardavidas=" . $idGuardavidas. ' ORDER BY gp.Fecha DESC';
+        //echo $sql;exit;
+        $registros = $this->consulta($sql);
+        if (count($registros) > 0) {
+            return $registros[0]; 
+        }else{
+            return null;
+        }
+           
+    }
+    public function getDescripcionesPuestos($request) {
+        /**
+         * Busco Balneario
+         */
+        $balneario=$this->buscarBalnearioActual($request);
+        if (($balneario!=null)) {
+            return $this->getDescripciones('Puesto','idBalneario='.$balneario['idBalneario'],'Nombre');
+        }
+        else{
+            return [];
+        }
+    }
+
+    public function getDescripciones($tabla, $where = null, $order =null) {
         $sql = "select * from $tabla";
         if (!is_null($where)) {
             $sql .= " where $where";
+        }
+        
+        if (!is_null($order)) {
+            $sql .= " order by $order";
         }
         $registros = $this->consulta($sql);
         $descripciones = [];
         //print_r($registros);
         foreach ($registros as $registro) {
-            $descripciones[] = ['text' => $registro['Descripcion'], 'callback_data' => $tabla . '-' . $registro["id$tabla"]];
+            if(isset($registro['Descripcion'])){
+                $nombre='Descripcion';
+            }else{
+                $nombre='Nombre';
+            }
+            $descripciones[] = ['text' => $registro[$nombre], 'callback_data' => $tabla . '-' . $registro["id$tabla"]];
         }
         return $descripciones;
     }
