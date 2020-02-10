@@ -247,7 +247,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
                     $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD);
-                    $this->sendMessage($request->message->chat->id, 'Complete la Novedad, Comparta posición geográfica, foto y audio.');
+                    $this->sendMessage($request->message->chat->id, 'Complete la Novedad, '.$balenario.' Comparta posición geográfica, foto y audio.');
                 }
             } elseif (isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
 
