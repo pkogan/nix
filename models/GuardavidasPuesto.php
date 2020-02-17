@@ -16,6 +16,25 @@ use Yii;
  */
 class GuardavidasPuesto extends \yii\db\ActiveRecord
 {
+    public static function companneros(){
+         
+         if (count(Yii::$app->user->identity->guardavidasPuestos) > 0) {
+            /* @var $guardavidasPuesto GuardavidasPuesto    */
+            $guardavidasPuesto = Yii::$app->user->identity->guardavidasPuestos[0];
+            //print_r($guardavidasPuesto->idPuesto0);exit;
+            $puestos= GuardavidasPuesto::find()->joinWith('idPuesto0')->where('idBalneario='.$guardavidasPuesto->idPuesto0->idBalneario)->all();
+            //print_r($puestos);exit;
+            foreach($puestos as $guardavidasPuestos){
+                /* @var $guardavidasPuestos GuardavidasPuesto    */
+                $in[]=$guardavidasPuestos->idGuardavidas;
+            }
+            $in=array_unique($in);
+            $in= '('.implode(',', $in).')';
+        }else{
+            $in='('.Yii::$app->user->identity->id.')';
+        }
+        return $in;
+    }
     /**
      * {@inheritdoc}
      */

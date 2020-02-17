@@ -59,22 +59,7 @@ class Asistencia extends \yii\db\ActiveRecord {
         if (Yii::$app->user->identity->idRol != Asistencia::ROL_ADMIN) {
             $query->andWhere('idEstadoAsistencia=' . Asistencia::ESTADO_CERRADA);
         }
-        $in=[];
-        if (count(Yii::$app->user->identity->guardavidasPuestos) > 0) {
-            /* @var $guardavidasPuesto GuardavidasPuesto    */
-            $guardavidasPuesto = Yii::$app->user->identity->guardavidasPuestos[0];
-            //print_r($guardavidasPuesto->idPuesto0);exit;
-            $puestos= GuardavidasPuesto::find()->joinWith('idPuesto0')->where('idBalneario='.$guardavidasPuesto->idPuesto0->idBalneario)->all();
-            //print_r($puestos);exit;
-            foreach($puestos as $guardavidasPuestos){
-                /* @var $guardavidasPuestos GuardavidasPuesto    */
-                $in[]=$guardavidasPuestos->idGuardavidas;
-            }
-            $in=array_unique($in);
-            $in= '('.implode(',', $in).')';
-        }else{
-            $in='('.Yii::$app->user->identity->id.')';
-        }
+        $in=GuardavidasPuesto::companneros();
 
         if (Yii::$app->user->identity->idRol == Asistencia::ROL_GUARDAVIDAS || Yii::$app->user->identity->idRol == Asistencia::ROL_INGRESANTE) {
             $query->andWhere('Guardavidas.idGuardavidas in ' . $in);
