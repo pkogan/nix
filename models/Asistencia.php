@@ -120,10 +120,10 @@ class Asistencia extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'idAsistencia' => 'Id Asistencia',
-            'idGuardavidas' => 'Id Guardavidas',
+            'idGuardavidas' => 'Guardavidas',
             'Fecha' => 'Fecha',
-            'idTipo' => 'Id Tipo',
-            'idPuesto' => 'Id Puesto',
+            'idTipo' => 'Tipo',
+            'idPuesto' => 'Puesto',
             'idEstadoAsistencia' => 'Id Estado Asistencia',
             'Lugar' => 'Lugar',
             'Observacion' => 'Observacion',

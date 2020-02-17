@@ -42,6 +42,7 @@ AppAsset::register($this);
             
             //['label' => 'Registros', 'url' => ['/asistencia'],'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Mapa', 'url' => ['/asistencia/mapa'],'visible' => !Yii::$app->user->isGuest],
+            ['label' => 'Resumen', 'url' => ['/asistencia/resumen'],'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Usuarios', 'url' => ['/guardavidas'],'visible' => !Yii::$app->user->isGuest && Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN],
             ['label' => 'Balnearios', 'url' => ['/balneario'],'visible' => !Yii::$app->user->isGuest && Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN],
             ['label' => 'Puestos', 'url' => ['/puesto'],'visible' => !Yii::$app->user->isGuest && Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN],
