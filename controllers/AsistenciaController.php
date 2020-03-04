@@ -29,11 +29,11 @@ class AsistenciaController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index', 'view', 'mapa','update','delete','create','resumen'],
+                'only' => ['index', 'view', 'mapa','update','delete','create','resumen','libro'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['index', 'view', 'mapa','resumen'],
+                        'actions' => ['index', 'view', 'mapa','resumen','libro'],
                         'roles' => ['@'],
                     ],
                     
@@ -72,6 +72,21 @@ class AsistenciaController extends Controller
         ]);
     }
 
+        /**
+     * Lists all Asistencia models.
+     * @return mixed
+     */
+    public function actionLibro()
+    {
+        $searchModel = new AsistenciaSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('libro', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
         /**
      * Lists all Asistencia models.
      * @return mixed

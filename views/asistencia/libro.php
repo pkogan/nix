@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yii\widgets\ListView;
 use yii\widgets\Pjax;
 use kartik\daterange\DateRangePicker;
 
@@ -9,8 +9,9 @@ use kartik\daterange\DateRangePicker;
 /* @var $searchModel app\models\AsistenciaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Resumen';
+$this->title = 'Asistencias';
 $this->params['breadcrumbs'][] = $this->title;
+
 $this->registerJs("
 $('.btn-search').click(function(){
     $('.search-form').toggle();
@@ -34,24 +35,10 @@ $('.btn-search').click(function(){
 </div>
         <?php Pjax::begin(); ?>
     <?=
-    GridView::widget([
+    ListView::widget([
         'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-               // ['label' => 'id', 'attribute' => 'idAsistencia'],
-            //'idAsistencia',
-            //['label' => 'Guardavidas', 'attribute' => 'guardavidas', 'value' => 'idGuardavidas0.Nombre'],
-                //'idTipo0.Descripcion',
-                ['label' => 'Tipo',  'value' => 'Descripcion'],
-                ['label' => 'Puesto',  'value' => 'Nombre'],
-                ['label' => 'Asistencia', 'value' => 'Count'],
-                ['label' => 'Victimas', 'value' => 'Cantidad'],
-        //['label' => 'Estado','attribute' => 'idEstadoAsistencia0.Descripcion'],
-        //'Lugar',
-        //'Observacion:ntext',
-        //['class' => 'yii\grid\ActionColumn'],
-        ],
+        'itemView' => '_view',
+        
     ]);
     ?>
 

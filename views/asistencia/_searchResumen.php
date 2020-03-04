@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\models\Asistencia;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\AsistenciaSearch */
@@ -12,7 +13,7 @@ use yii\widgets\ActiveForm;
 
     <?php
     $form = ActiveForm::begin([
-                'action' => ['resumen'],
+                'action' => [Yii::$app->controller->action->id],
                 'method' => 'get',
                 'options' => [
                     'data-pjax' => 1
@@ -50,13 +51,13 @@ use yii\widgets\ActiveForm;
     <?php echo $form->field($model, 'idTipo')->dropDownList(yii\helpers\ArrayHelper::map(\app\models\TipoAsistencia::find()->all(), 'idTipoAsistencia', 'Descripcion'), ['prompt' => 'Todos']) ?>
 
 
-        <?php // echo $form->field($model, 'Lugar') ?>
+        <?php if(Yii::$app->user->identity->idRol == Asistencia::ROL_ADMIN) {echo $form->field($model, 'idEstadoAsistencia')->dropDownList(yii\helpers\ArrayHelper::map(\app\models\EstadoAsistencia::find()->all(), 'idEstadoAsistencia', 'Descripcion'), ['prompt' => 'Todos']);}?>
 
 <?php // echo $form->field($model, 'Observacion')  ?>
 
     <div class="form-group">
-<?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-<?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
+<?= Html::submitButton('Buscar', ['class' => 'btn btn-primary']) ?>
+<?php //echo Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
     </div>
 
 <?php ActiveForm::end(); ?>

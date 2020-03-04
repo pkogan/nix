@@ -11,14 +11,11 @@ use dosamigos\leaflet\widgets\Map;
 /* @var $this yii\web\View */
 /* @var $model app\models\Asistencia */
 
-$this->title = $model->idAsistencia;
-$this->params['breadcrumbs'][] = ['label' => 'Asistencias', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
+
 ?>
 <div class="asistencia-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h3><?= Html::a($model->getFechaStr().' #'.$model->idAsistencia.' '.$model->idTipo0->Descripcion, ['view', 'id' => $model->idAsistencia], []) ?></h3>
 
 <!--    <p>
     <?= Html::a('Update', ['update', 'id' => $model->idAsistencia], ['class' => 'btn btn-primary']) ?>
@@ -34,9 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     </p>-->
-<?php if(Yii::$app->user->identity->idRol== \app\models\Asistencia::ROL_ADMIN){
-    echo Html::a('CrearPuesto', ['/puesto/creardesdeasistencia', 'id' => $model->idAsistencia], ['class' => 'btn btn-primary']);
-} ?>
+
     <?php
     $atributes = [
         //'idAsistencia',
@@ -45,10 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => $model->idGuardavidas0->Nombre,
         ],
         'Fecha',
-            [// the owner name of the model
-            'label' => 'Tipo',
-            'value' => $model->idTipo0->Descripcion,
-        ],
+        
             [// the owner name of the model
             'label' => 'Estado',
             'value' => $model->idEstadoAsistencia0->Descripcion,
@@ -116,34 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => $atributes
     ]);
-    if(is_null($model->latitude)&&!is_null($model->idPuesto)){
-        $model->latitude=$model->idPuesto0->latitude;
-        $model->longitude=$model->idPuesto0->longitude;
-    }
-    if (!is_null($model->latitude)) {
-        $center = new LatLng(['lat' => $model->latitude, 'lng' => $model->longitude]);
-        $descripcion = '#' . $model->idTipo0->Descripcion . ' ' . $model->Fecha;
-        $marker = new Marker(['latLng' => $center, 'popupContent' => $descripcion
-        ]);
-        $tileLayer = new TileLayer([
-            'urlTemplate' => 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            'clientOptions' => [
-                'attribution' => '' .
-                'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-            //'subdomains' => 'nix'
-            ]
-        ]);
 
-// now our component and we are going to configure it
-        $leaflet = new LeafLet([
-            'tileLayer' => $tileLayer, // set the TileLayer
-            'center' => $center, // set the center
-        ]);
-
-
-        $leaflet->addLayer($marker);
-        echo Map::widget(['leafLet' => $leaflet]);
-    }
     ?>
 
 </div>

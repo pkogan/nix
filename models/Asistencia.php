@@ -109,7 +109,7 @@ class Asistencia extends \yii\db\ActiveRecord {
             'Fecha' => 'Fecha',
             'idTipo' => 'Tipo',
             'idPuesto' => 'Puesto',
-            'idEstadoAsistencia' => 'Id Estado Asistencia',
+            'idEstadoAsistencia' => 'Estado',
             'Lugar' => 'Lugar',
             'Observacion' => 'Observacion',
         ];

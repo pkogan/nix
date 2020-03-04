@@ -63,9 +63,9 @@ class AsistenciaSearch extends Asistencia {
         // grid filtering conditions
         $query->andFilterWhere([
             'idAsistencia' => $this->idAsistencia,
-            //'idGuardavidas' => $this->idGuardavidas,
+            'Asistencia.idGuardavidas' => $this->idGuardavidas,
             'Fecha' => $this->Fecha,
-            //'idTipo' => $this->idTipo,
+            'idTipo' => $this->idTipo,
             'idEstadoAsistencia' => $this->idEstadoAsistencia,
         ]);
 
@@ -112,7 +112,7 @@ class AsistenciaSearch extends Asistencia {
             'Asistencia.idGuardavidas' => $this->idGuardavidas,
             //'Fecha' => $this->Fecha,
             'Asistencia.idTipo' => $this->idTipo,
-            //'idEstadoAsistencia' => $this->idEstadoAsistencia,
+            'idEstadoAsistencia' => $this->idEstadoAsistencia,
         ]);
 
         $query->andFilterWhere(['like', 'Puesto.Nombre', $this->puesto]);
