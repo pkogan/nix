@@ -80,6 +80,10 @@ use dosamigos\leaflet\widgets\Map;
         foreach ($model->archivos as $key => $value) {
             /* @var $value app\models\Archivo */
             $archivos[] = '<a href="'.$value->Path.'">archivo'.$key.'.'.substr($value->Path, strlen($value->Path)-3,3).'</a>';
+            if(substr($value->Path, strlen($value->Path)-3,3)=='jpg'){
+                $archivos[] = '<img src="'.$value->Path.'"/>';
+            }
+            
         }
         $atributes[] = ['label' => 'Adjuntos','format'=>'raw', 'value' => implode('<br/>', $archivos)];
     }
