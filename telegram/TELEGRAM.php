@@ -160,7 +160,12 @@ class TELEGRAM {
 
         file_put_contents($this->file_log, $fecha . ' - ' . $request, FILE_APPEND);
         $request = json_decode($request);
-
+        $date = date_create();
+        date_timestamp_set($date, $request->message->date);
+        //echo $request->message->date; 
+        
+        $fecha= date_format($date, 'Y-m-d H:i:s');
+        //exit();
         if (isset($request->message->text)) {
             echo('-----------Mensaje: ' . $request->message->text);
         }

@@ -96,7 +96,12 @@ class BD extends PDO {
         $Lugar = 'null';
         $idEstado = BD::ESTADO_ABIERTA;
         $Observacion = 'null';
-        $Fecha = date('Y-m-d H:i:s');
+        $date = date_create();
+        date_timestamp_set($date, $request->message->date);
+        //echo $request->message->date; 
+        
+        $Fecha= date_format($date, 'Y-m-d H:i:s');
+        //$Fecha = date('Y-m-d H:i:s');
 
         // si es novedad solo guarda Asistencia
         $sql = "INSERT INTO `Asistencia`( `idGuardavidas`, `Fecha`, `idTipo`, `idEstadoAsistencia`, `Lugar`, `Observacion`) VALUES ($idGuardavidas, \"$Fecha\", $idTipo, $idEstado, $Lugar, $Observacion);";
