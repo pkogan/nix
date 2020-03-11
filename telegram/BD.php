@@ -84,11 +84,11 @@ class BD extends PDO {
         }
     }
 
-    public function insertRescate($request) {
-        return $this->insertAsistencia($request, BD::TIPO_RESCATE);
+    public function insertRescate($request,$fecha) {
+        return $this->insertAsistencia($request, BD::TIPO_RESCATE,$fecha);
     }
 
-    public function insertAsistencia($request, $idTipo = BD::TIPO_RESCATE) {
+    public function insertAsistencia($request, $idTipo = BD::TIPO_RESCATE,$Fecha) {
         /* INSERT INTO `Asistencia`(`idAsistencia`, `idGuardavidas`, `Fecha`, `idTipo`, `Lugar`, `Observación`) VALUES ([value-1],[value-2],[value-3],[value-4],[value-5],[value-6]) */
         /* hay que buscar si existe el guardavidas y obtener el id */
         $idGuardavidas = $this->buscarGuardavidas($request);
@@ -96,11 +96,11 @@ class BD extends PDO {
         $Lugar = 'null';
         $idEstado = BD::ESTADO_ABIERTA;
         $Observacion = 'null';
-        $date = date_create();
-        date_timestamp_set($date, $request->message->date);
+        //$date = date_create();
+        //date_timestamp_set($date, $request->message->date);
         //echo $request->message->date; 
         
-        $Fecha= date_format($date, 'Y-m-d H:i:s');
+        //$Fecha= date_format($date, 'Y-m-d H:i:s');
         //$Fecha = date('Y-m-d H:i:s');
 
         // si es novedad solo guarda Asistencia

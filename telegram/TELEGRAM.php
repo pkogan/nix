@@ -226,7 +226,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
-                    $this->bd->insertRescate($request->message->from);
+                    $this->bd->insertRescate($request->message->from,$fecha);
 
                     $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Rescate, '.$balenario.'Comparta posición geográfica, foto y audio.', [$this->bd->getDescripcionesPuestos($request->message->from),$this->bd->getDescripciones('Complejidad'), $this->bd->getDescripciones('RangoEtario'),$this->bd->getDescripciones('Equipamiento','idTipoAsistencia='.BD::TIPO_RESCATE)/* , $this->bd->getDescripciones('PrimerosAuxilios') */]);
                 }
@@ -235,7 +235,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
-                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_PREVENCION);
+                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_PREVENCION,$fecha);
                     $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Prevención, '.$balenario.'Comparta posición geográfica, foto y audio.', [$this->bd->getDescripcionesPuestos($request->message->from),$this->bd->getDescripciones('RangoEtario')]);
                 }
             } elseif ($request->message->text == '/primerosauxilios') {
@@ -243,7 +243,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
-                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_PRIMEROSAUXILIOS);
+                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_PRIMEROSAUXILIOS,$fecha);
                     $this->sendMessage($request->message->chat->id, 'Complete Caracteristicas de Primeros Auxilios, '.$balenario.' Comparta posición geográfica, foto y audio.', [$this->bd->getDescripcionesPuestos($request->message->from),$this->bd->getDescripciones('RangoEtario'), $this->bd->getDescripciones('PrimerosAuxilios')]);
                 }
             } elseif ($request->message->text == '/novedad') {
@@ -251,7 +251,7 @@ elseif ($callback[0] == 'Guardar') {
                     $this->sendMessage($request->message->chat->id, 'Tiene pendiente por cerrar un Registro');
                     $this->cerrarMsg($idAsistencia, $request);
                 } else {
-                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD);
+                    $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD,$fecha);
                     $this->sendMessage($request->message->chat->id, 'Complete la Novedad, '.$balenario.' Comparta posición geográfica, foto y audio.',[$this->bd->getDescripcionesPuestos($request->message->from)]);
                 }
             } elseif (isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
