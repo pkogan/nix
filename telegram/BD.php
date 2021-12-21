@@ -3,7 +3,8 @@
 namespace telegram;
 
 use \PDO;
-
+use DateTime;
+use DateInterval;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -138,16 +139,17 @@ class BD extends PDO {
         $idGuardavidas = $this->buscarGuardavidas($request);
         $estado = BD::ESTADO_CERRADA;
         $date = new DateTime(); // For today/now, don't pass an arg.
+        $fecha=$date->format("Y-m-d");
         $date->add(DateInterval::createFromDateString('-7 days'));
         $fechad=$date->format("Y-m-d");
         $sql = "select t.idTipoAsistencia,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
                 . " inner join Victima v on a.idAsistencia=v.idAsistencia"
                 . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
-                . " a.Fecha>'$fechad'"
+                . " a.Fecha>'$fechad' and a.Fecha<'$fecha'"
                 . " group by t.idTipoAsistencia,t.Descripcion";
         $resumen = $this->consulta($sql);
+        $salida="(entre $fecha y $fechad)\n";
         if(count($resumen)>0){
-            $salida="";
             foreach ($resumen as $fila){
                 $salida.=$fila['Tipo'].':'.$fila['Cantidad']."\n";
             }

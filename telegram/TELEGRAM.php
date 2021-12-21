@@ -258,7 +258,7 @@ elseif ($callback[0] == 'Guardar') {
             // /resumenS resumen semanal
             elseif ($request->message->text == '/resumens') {
                     $resumen=$this->bd->buscarResumen($request->message->from,'S',$fecha);
-                    $this->sendMessage($request->message->chat->id, 'Resumen Semanal: '.$balenario."\n"
+                    $this->sendMessage($request->message->chat->id, 'Resumen Semanal '.$balenario."\n"
                             .$resumen);//. "Prevenciones:0 \nAsistencias:0 \nRescates:0 \nCuraciones:0 \nDerivaciones:0");
                 }
             
