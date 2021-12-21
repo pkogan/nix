@@ -144,7 +144,7 @@ class BD extends PDO {
         $resumen = $this->consulta($sql);
         if(count($resumen)>0){
             $salida="";
-            foreach ($estadoAbierta as $fila){
+            foreach ($resumen as $fila){
                 $salida.=$fila['Tipo'].':'.$fila['Cantidad']."\n";
             }
         }
