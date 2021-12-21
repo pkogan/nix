@@ -137,9 +137,13 @@ class BD extends PDO {
 
         $idGuardavidas = $this->buscarGuardavidas($request);
         $estado = BD::ESTADO_CERRADA;
+        $date = new DateTime($fecha); // For today/now, don't pass an arg.
+        $date->modify("-7 day");
+        $fechad=$date->format("Y-m-d");
         $sql = "select t.idTipoAsistencia,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
                 . " inner join Victima v on a.idAsistencia=v.idAsistencia"
-                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado"
+                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
+                . " a.Fecha>$fechad"
                 . " group by t.idTipoAsistencia,t.Descripcion";
         $resumen = $this->consulta($sql);
         if(count($resumen)>0){
@@ -149,7 +153,7 @@ class BD extends PDO {
             }
         }
         else{
-            $salida='Sin novedades';
+            $salida='Sin novedades'. $sql;
         }
         return $salida;
     }
