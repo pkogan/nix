@@ -137,10 +137,10 @@ class BD extends PDO {
 
         $idGuardavidas = $this->buscarGuardavidas($request);
         $estado = BD::ESTADO_CERRADA;
-        $sql = "select t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipoAsistencia=t.idTipoAsistencia"
+        $sql = "select t.idTipo,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
                 . " inner join Victima v on a.idAsistencia=v.idAsistencia"
                 . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado"
-                . " group by t.Descripcion";
+                . " group by t.idTipo,t.Descripcion";
         $resumen = $this->consulta($sql);
         if(count($resumen)>0){
             $salida="";
