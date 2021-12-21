@@ -206,7 +206,7 @@ elseif ($callback[0] == 'Guardar') {
             } else {
                 $this->sendMessage($request->message->chat->id, 'No ha iniciado Asistencia /prevencion, /primerosauxilios o /rescate?');
             }
-        } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/web', '/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
+        } elseif (substr($request->message->text, 0, 6) == '/fecha' || in_array($request->message->text, ['/web', '/cerrar', '/start', '/novedad', '/prevencion', '/rescate', '/primerosauxilios','/resumens']) || isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
             $idAsistencia = $this->bd->buscarAsistenciaAbierta($request->message->from);
             $balenario=$this->bd->buscarBalnearioActual($request->message->from);
             if($balenario!=null){
@@ -254,7 +254,17 @@ elseif ($callback[0] == 'Guardar') {
                     $this->bd->insertAsistencia($request->message->from, BD::TIPO_NOVEDAD,$fecha);
                     $this->sendMessage($request->message->chat->id, 'Complete la Novedad, '.$balenario.' Comparta posición geográfica, foto y audio.',[$this->bd->getDescripcionesPuestos($request->message->from)]);
                 }
-            } elseif (isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
+            }
+            // /resumenS resumen semanal
+            elseif ($request->message->text == '/resumens') {
+                    //$this->bd->buscarResumen($request->message->from,'S',$fecha);
+                    $this->sendMessage($request->message->chat->id, 'Resumen Semanal: '.$balenario.'\n'
+                            . 'Prevenciones:0 \n Asistencias:0 \n Rescates:0 \n Curaciones:0 \n Derivaciones:0');
+                }
+            
+            // /resumenSC resumen semanal completo
+    
+             elseif (isset($request->message->photo) || isset($request->message->voice) || isset($request->message->location)) {
 
                 if ($idAsistencia != 0) {
                     if (isset($request->message->photo)) {
