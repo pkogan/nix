@@ -133,6 +133,27 @@ class BD extends PDO {
         }
     }
 
+    public function buscarResumen($request,$periodo,$fecha) {
+
+        $idGuardavidas = $this->buscarGuardavidas($request);
+        $estadoAbierta = BD::ESTADO_ABIERTA;
+        $sql = "select t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipoAsistencia=t.idTipoAsistencia"
+                . " inner join Victima v on a.idAsistencia=v.idAsistencia"
+                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estadoAbierta"
+                . " group by t.Descripcion";
+        $resumen = $this->consulta($sql);
+        if(count($resumen)>0){
+            $salida="";
+            foreach ($estadoAbierta as $fila){
+                $salida.=$fila['Tipo'].':'.$fila['Cantidad']."\n";
+            }
+        }
+        else{
+            $salida='Sin novedades';
+        }
+        
+    }
+
     public function buscarAsistenciaAbierta($request) {
 
         $idGuardavidas = $this->buscarGuardavidas($request);

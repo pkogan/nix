@@ -257,9 +257,9 @@ elseif ($callback[0] == 'Guardar') {
             }
             // /resumenS resumen semanal
             elseif ($request->message->text == '/resumens') {
-                    //$this->bd->buscarResumen($request->message->from,'S',$fecha);
+                    $resumen=$this->bd->buscarResumen($request->message->from,'S',$fecha);
                     $this->sendMessage($request->message->chat->id, 'Resumen Semanal: '.$balenario."\n"
-                            . "Prevenciones:0 \n Asistencias:0 \n Rescates:0 \n Curaciones:0 \n Derivaciones:0");
+                            .$resumen);//. "Prevenciones:0 \nAsistencias:0 \nRescates:0 \nCuraciones:0 \nDerivaciones:0");
                 }
             
             // /resumenSC resumen semanal completo
