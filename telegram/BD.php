@@ -145,7 +145,7 @@ class BD extends PDO {
         $sql = "select t.idTipoAsistencia,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
                 . " inner join Victima v on a.idAsistencia=v.idAsistencia"
                 . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
-                . " a.Fecha>'$fechad' and a.Fecha<'$fecha'"
+                . " a.Fecha>'$fechad' and a.Fecha=<'$fecha'"
                 . " group by t.idTipoAsistencia,t.Descripcion";
         $resumen = $this->consulta($sql);
         $salida="(entre $fecha y $fechad)\n";
