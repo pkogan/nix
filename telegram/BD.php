@@ -151,7 +151,7 @@ class BD extends PDO {
         else{
             $salida='Sin novedades';
         }
-        
+        return $salida;
     }
 
     public function buscarAsistenciaAbierta($request) {
