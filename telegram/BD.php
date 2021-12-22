@@ -30,7 +30,10 @@ class BD extends PDO {
     const ROL_GUARDAVIDAS = 1;
     const ROL_JEFE = 2;
     const ROL_INGRESANTE = 3;
+    const COMPLEJIDAD_SIMPLE = 3;
     const COMPLEJIDAD_MEDIA = 2;
+    const COMPLEJIDAD_ALTA = 1;
+    const PA_DERIVACION = 8;
 
     public function __construct() {
         include 'config.php';
@@ -133,6 +136,34 @@ class BD extends PDO {
             }
         }
     }
+    
+    public function buscarPuestos($request,$periodo,$fecha){
+        $idGuardavidas = $this->buscarGuardavidas($request);
+        $estado = BD::ESTADO_CERRADA;
+        $date = new DateTime(); // For today/now, don't pass an arg.
+        $fecha=$date->format("Y-m-d");
+        $date->add(DateInterval::createFromDateString('-7 days'));
+        $fechad=$date->format("Y-m-d");
+
+        $sql = "select distinct p.Nombre as Puesto from Asistencia a inner join Puesto p on a.idPuesto=p.idPuesto"
+                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
+                . " a.Fecha>'$fechad' and a.Fecha<='$fecha'";
+                
+        //echo $sql;exit;
+        $registros = $this->consulta($sql);
+        if (count($registros) > 0) {
+            $puestos='Puesto\Embarcación: ';
+            foreach ($registros as $fila) {
+                $puestos.=$fila['Puesto'].' ';
+            }
+            $puestos.="\n";
+        }else{
+            $puestos='';
+            
+        }
+        return $puestos;
+           
+    }
 
     public function buscarResumen($request,$periodo,$fecha) {
 
@@ -145,13 +176,38 @@ class BD extends PDO {
         $sql = "select t.idTipoAsistencia,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
                 . " inner join Victima v on a.idAsistencia=v.idAsistencia"
                 . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
-                . " a.Fecha>'$fechad' and a.Fecha<='$fecha'"
+                . " a.Fecha>'$fechad' and a.Fecha<='$fecha' and t.idTipoAsistencia in (".BD::TIPO_PREVENCION.','.BD::TIPO_PRIMEROSAUXILIOS.")"
+                . " group by t.idTipoAsistencia,t.Descripcion"
+                . " union"
+                ." select \"5\" as idTipoAsistencia,\"Asistencia\" as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
+                . " inner join Victima v on a.idAsistencia=v.idAsistencia"
+                . " inner join Incidente i on a.idAsistencia=i.idAsistencia"
+                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
+                . " a.Fecha>'$fechad' and a.Fecha<='$fecha' and t.idTipoAsistencia in (".BD::TIPO_RESCATE.") and i.idComplejidad in(".BD::COMPLEJIDAD_SIMPLE.")"
+                . " group by t.idTipoAsistencia,t.Descripcion"
+                . " union"
+                ." select t.idTipoAsistencia,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
+                . " inner join Victima v on a.idAsistencia=v.idAsistencia"
+                . " inner join Incidente i on a.idAsistencia=i.idAsistencia"
+                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
+                . " a.Fecha>'$fechad' and a.Fecha<='$fecha' and t.idTipoAsistencia in (".BD::TIPO_RESCATE.") and i.idComplejidad <".BD::COMPLEJIDAD_SIMPLE
+                . " group by t.idTipoAsistencia,t.Descripcion"
+                . " union"
+                ." select \"6\" as idTipoAsistencia,\"Derivación\" as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
+                . " inner join Victima v on a.idAsistencia=v.idAsistencia"
+                . " inner join Incidente i on a.idAsistencia=i.idAsistencia"
+                . " inner join PrimerosAuxiliosIncidente pi on pi.idIncidente=i.idIncidente"
+                . " where idGuardavidas=$idGuardavidas and idEstadoAsistencia=$estado and"
+                . " a.Fecha>'$fechad' and a.Fecha<='$fecha' and t.idTipoAsistencia in (".BD::TIPO_PRIMEROSAUXILIOS.") and pi.idPrimerosAuxilios =".BD::PA_DERIVACION
                 . " group by t.idTipoAsistencia,t.Descripcion";
+                
+        
         $resumen = $this->consulta($sql);
-        $salida="(entre $fecha y $fechad)\n";
+        $salida="Entre $fecha y $fechad\n";
+        $salida.=$this->buscarPuestos($request, $periodo, $fecha);
         if(count($resumen)>0){
             foreach ($resumen as $fila){
-                $salida.=$fila['Tipo'].':'.$fila['Cantidad']."\n";
+                $salida.=$fila['Tipo'].': '.$fila['Cantidad']."\n";
             }
         }
         else{

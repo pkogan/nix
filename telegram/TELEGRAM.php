@@ -211,8 +211,10 @@ elseif ($callback[0] == 'Guardar') {
             $balenario=$this->bd->buscarBalnearioActual($request->message->from);
             if($balenario!=null){
                 $balenario=' Puesto en Balnerio '.$balenario['Balneario'].', ';
+                $nombre_balneario=$balenario['Balneario'];
             }else{
                 $balenario='';
+                $nombre_balneario='';
             }
             if ($request->message->text == '/start') {
                 $this->sendMessage($request->message->chat->id, 'Hola ' . $request->message->from->first_name);
@@ -258,7 +260,7 @@ elseif ($callback[0] == 'Guardar') {
             // /resumenS resumen semanal
             elseif ($request->message->text == '/resumens') {
                     $resumen=$this->bd->buscarResumen($request->message->from,'S',$fecha);
-                    $this->sendMessage($request->message->chat->id, 'Resumen Semanal '.$balenario."\n"
+                    $this->sendMessage($request->message->chat->id, 'Resumen semanal '.$nombre_balenario."\nGuardavidas: ".$request->message->from->first_name."\n"
                             .$resumen);//. "Prevenciones:0 \nAsistencias:0 \nRescates:0 \nCuraciones:0 \nDerivaciones:0");
                 }
             
