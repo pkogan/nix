@@ -170,8 +170,9 @@ class BD extends PDO {
         $idGuardavidas = $this->buscarGuardavidas($request);
         $estado = BD::ESTADO_CERRADA;
         $date = new DateTime(); // For today/now, don't pass an arg.
+        $date->add(DateInterval::createFromDateString('1 days'));
         $fecha=$date->format("Y-m-d");
-        $date->add(DateInterval::createFromDateString('-7 days'));
+        $date->add(DateInterval::createFromDateString('-8 days'));
         $fechad=$date->format("Y-m-d");
         $sql = "select t.idTipoAsistencia,t.Descripcion as Tipo, sum(v.Cantidad) as Cantidad from Asistencia a inner join TipoAsistencia t on a.idTipo=t.idTipoAsistencia"
                 . " inner join Victima v on a.idAsistencia=v.idAsistencia"
