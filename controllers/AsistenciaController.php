@@ -64,7 +64,12 @@ class AsistenciaController extends Controller
     public function actionIndex()
     {
         $searchModel = new AsistenciaSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $params=Yii::$app->request->queryParams;
+        if(!isset($params['AsistenciaSearch'])){
+            $params['AsistenciaSearch']['dealerAvailableDate']='2023-12-01 - 2024-03-30';
+        }
+        $dataProvider = $searchModel->search($params);
+       
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -79,7 +84,12 @@ class AsistenciaController extends Controller
     public function actionLibro()
     {
         $searchModel = new AsistenciaSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $params=Yii::$app->request->queryParams;
+        if(!isset($params['AsistenciaSearch'])){
+            $params['AsistenciaSearch']['dealerAvailableDate']='2023-12-01 - 2024-03-30';
+        }
+        $dataProvider = $searchModel->search($params);
+        //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('libro', [
             'searchModel' => $searchModel,
@@ -94,7 +104,13 @@ class AsistenciaController extends Controller
     public function actionResumen()
     {
         $searchModel = new AsistenciaSearch();
-        $dataProvider = $searchModel->searchResumen(Yii::$app->request->queryParams);
+        $params=Yii::$app->request->queryParams;
+        if(!isset($params['AsistenciaSearch'])){
+            $params['AsistenciaSearch']['dealerAvailableDate']='2023-12-01 - 2024-03-30';
+        }
+        $dataProvider = $searchModel->searchResumen($params);
+
+        //$dataProvider = $searchModel->searchResumen(Yii::$app->request->queryParams);
 
         return $this->render('resumen', [
             'searchModel' => $searchModel,
