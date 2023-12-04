@@ -49,7 +49,8 @@ class AsistenciaController extends Controller
     public function actionMapa()
     {   
         $fieldName='Lugar';
-        $asistencias = Asistencia::find()->all();
+        $asistencias = Asistencia::find()->where(['>=','Fecha','2023-12-01'])->all();
+        //$asistencias = Asistencia::find()->all();
         
 
         return $this->render('mapa', [
